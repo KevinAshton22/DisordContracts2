@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WTF-Healers Contracts</title>
+    <link rel="icon" href="img/logo.gif" type="image/png">
+    <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --card-bg: #161616;
+            --accent-orange: #ff8c00;
+            --accent-orange-grad: linear-gradient(135deg, #ff9d00, #ff5e00);
+            --accent-green: #00ff6a;
+            --accent-red: #ff4d4d;
+            --text-main: #e0e0e0;
+            --border-color: #333;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        * { box-sizing: border-box; outline: none; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-size: 2rem;
+            text-align: center;
+            background: var(--accent-orange-grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin: 10px 0 20px 0;
+            text-shadow: 0px 4px 15px rgba(255, 140, 0, 0.2);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-color);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            color: var(--accent-orange);
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        /* --- Settings Grid --- */
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr auto;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: end;
+        }
+        
+        @media (max-width: 600px) {
+            .settings-grid { grid-template-columns: 1fr; }
+        }
+
+        label {
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            margin-bottom: 4px;
+            display: block;
+            font-weight: 600;
+        }
+
+        input {
+            width: 100%;
+            background: #080808;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            transition: 0.3s;
+        }
+
+        input:focus {
+            border-color: var(--accent-orange);
+        }
+
+        /* --- COMPACT TABLE STYLES --- */
+        .table-container {
+            background: #080808;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .table-header {
+            display: grid;
+            grid-template-columns: 40px 1fr 1fr 1.5fr 80px;
+            background: #252525;
+            padding: 8px 10px;
+            font-size: 0.75rem;
+            color: var(--accent-green);
+            font-weight: bold;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .rows-scroll-area {
+            max-height: 350px;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .table-row {
+            display: grid;
+            grid-template-columns: 40px 1fr 1fr 1.5fr 80px;
+            gap: 10px;
+            padding: 8px 10px;
+            border-bottom: 1px solid #1a1a1a;
+            align-items: center;
+        }
+
+        .table-row:nth-child(even) { background-color: #0e0e0e; }
+        .table-row:hover { background-color: #1a1a1a; }
+
+        .row-num {
+            color: #666;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .table-container { overflow-x: auto; }
+            .table-header, .table-row { min-width: 600px; }
+        }
+
+        /* --- Buttons --- */
+        .btn-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+
+        button {
+            background: #222;
+            border: 1px solid var(--accent-orange);
+            color: var(--accent-orange);
+            padding: 10px 18px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        button:hover {
+            background: var(--accent-orange);
+            color: #000;
+        }
+
+        button.primary {
+            background: var(--accent-orange-grad);
+            color: #000;
+            border: none;
+        }
+        
+        button.small-btn {
+            padding: 6px 12px;
+            font-size: 0.7rem;
+            margin-left: 10px;
+        }
+
+        button.danger-btn {
+            border-color: var(--accent-red);
+            color: var(--accent-red);
+        }
+
+        button.danger-btn:hover {
+            background: var(--accent-red);
+            color: white;
+        }
+
+        /* --- Preview --- */
+        .preview-area {
+            margin-top: 20px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background: rgba(0,0,0,0.2);
+        }
+        
+        .preview-content {
+            padding: 15px;
+            color: #ddd;
+            font-family: monospace;
+            white-space: pre-line;
+            font-size: 0.85rem;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+
+    <h1>WTF-Healers Contracts</h1>
+
+    <div class="container">
+        
+        <div class="section-header">
+            <span class="section-title">Settings</span>
+        </div>
+        <div class="settings-grid">
+            <div>
+                <label>API Key (Hidden)</label>
+                <input type="password" id="apiKey" placeholder="Enter Public API Key">
+            </div>
+            <div>
+                <label>Split At</label>
+                <input type="number" id="splitLimit" value="6" min="1" max="20">
+            </div>
+            <div>
+                <button onclick="saveSettings()" style="height: 36px; margin-top: 18px;">Save</button>
+            </div>
+        </div>
+
+        <div class="section-header">
+            <span class="section-title">Contract List</span>
+            <div>
+                <button class="small-btn danger-btn" onclick="clearTable()">Clear All</button>
+                <button class="small-btn" onclick="fetchFactionIds()">Autofill Faction IDs</button>
+            </div>
+        </div>
+
+        <div class="table-container">
+            <div class="table-header">
+                <div style="text-align:center">#</div>
+                <div>Player ID</div>
+                <div>Faction ID</div>
+                <div>Condition (Type)</div>
+                <div>Chance %</div>
+            </div>
+
+            <div class="rows-scroll-area" id="rowsContainer">
+                </div>
+        </div>
+
+        <div class="btn-container">
+            <button class="primary" onclick="generateContracts()">Generate Message</button>
+            <button onclick="copyFull()">Copy Full (Nitro)</button>
+            <button onclick="copyPart(1)">Copy Message 1</button>
+            <button onclick="copyPart(2)">Copy Message 2</button>
+        </div>
+
+        <div id="previewContainer" class="preview-area hidden">
+            <div style="background: #222; padding: 5px 10px; font-size: 0.75rem; color: #888; border-bottom:1px solid #333;">Preview Output</div>
+            <div class="preview-content" id="previewOutput"></div>
+        </div>
+
+    </div>
+
+    <script>
+        const ROW_COUNT = 10;
+        let generatedContractsData = [];
+
+        // Headers & Footers
+        const HEADER_TEXT = `# RW Contracts for the week\n\n**__Hello, here are the revive contracts we have this week. Make sure you stack up! @Doctors__**`;
+        const FOOTER_TEXT = `**Notes**: Please keep chat in #"Doctors Office"\nAllies in BLUE, Enemies in WHITE\nDON'T DO FRIENDLY REVIVES FOR WHITE NOR HOSTILES ON BLUE\n\n**__Revives under the contracted percentage will not be paid!__**\n\n#contracts-no-idle-chat     #revive-pings    #healers-council    #"bookings and notes" @Doctor`;
+
+        window.onload = function() {
+            createTableRows();
+            loadSettings();
+        };
+
+        function createTableRows() {
+            const container = document.getElementById('rowsContainer');
+            container.innerHTML = ''; 
+
+            for (let i = 1; i <= ROW_COUNT; i++) {
+                const div = document.createElement('div');
+                div.className = 'table-row';
+                div.innerHTML = `
+                    <div class="row-num">${i}</div>
+                    <div><input type="text" id="pid_${i}" placeholder="PID"></div>
+                    <div><input type="text" id="fid_${i}" placeholder="FID"></div>
+                    <div><input type="text" id="cond_${i}" placeholder="Discord Pings"></div>
+                    <div><input type="number" id="chance_${i}" placeholder="50"></div>
+                `;
+                container.appendChild(div);
+            }
+        }
+
+        // New Clear Function
+        function clearTable() {
+            if(!confirm("Are you sure you want to clear all input fields?")) return;
+            
+            for (let i = 1; i <= ROW_COUNT; i++) {
+                document.getElementById(`pid_${i}`).value = "";
+                document.getElementById(`fid_${i}`).value = "";
+                document.getElementById(`cond_${i}`).value = "";
+                document.getElementById(`chance_${i}`).value = ""; // Or reset to 50 if preferred, currently clearing to empty
+            }
+            // Clear preview as well
+            document.getElementById('previewOutput').innerText = "";
+            document.getElementById('previewContainer').classList.add('hidden');
+            generatedContractsData = [];
+        }
+
+        function saveSettings() {
+            const key = document.getElementById('apiKey').value;
+            const limit = document.getElementById('splitLimit').value;
+            localStorage.setItem('torn_apiKey', key);
+            localStorage.setItem('torn_splitLimit', limit);
+            alert('Settings Saved!');
+        }
+
+        function loadSettings() {
+            const key = localStorage.getItem('torn_apiKey');
+            const limit = localStorage.getItem('torn_splitLimit');
+            if (key) document.getElementById('apiKey').value = key;
+            if (limit) document.getElementById('splitLimit').value = limit;
+        }
+
+        async function fetchFactionIds() {
+            const apiKey = document.getElementById('apiKey').value;
+            if (!apiKey) return alert("Enter API Key first.");
+
+            for (let i = 1; i <= ROW_COUNT; i++) {
+                const pid = document.getElementById(`pid_${i}`).value;
+                const fidInput = document.getElementById(`fid_${i}`);
+
+                if (pid.trim() !== '' && fidInput.value === '') {
+                    try {
+                        const res = await fetch(`https://api.torn.com/user/${pid}/?selections=profile&key=${apiKey}`);
+                        const data = await res.json();
+                        if (data.faction && data.faction.faction_id) {
+                            fidInput.value = data.faction.faction_id;
+                        }
+                    } catch (e) { console.error(e); }
+                }
+            }
+        }
+
+        async function generateContracts() {
+            const apiKey = document.getElementById('apiKey').value;
+            if (!apiKey) return alert("API Key required.");
+
+            generatedContractsData = [];
+            const preview = document.getElementById('previewContainer');
+            const output = document.getElementById('previewOutput');
+            
+            preview.classList.remove('hidden');
+            output.innerText = "Loading data...";
+
+            let tasks = [];
+            for (let i = 1; i <= ROW_COUNT; i++) {
+                const fid = document.getElementById(`fid_${i}`).value.trim();
+                const cond = document.getElementById(`cond_${i}`).value.trim() || "Discord Pings";
+                let chance = document.getElementById(`chance_${i}`).value.trim();
+                
+                if(!chance) chance = "50";
+                else if(parseInt(chance) > 100) chance = "100";
+                else if(parseInt(chance) < 1) chance = "1";
+
+                if (fid) tasks.push({ fid, cond, chance });
+            }
+
+            if (tasks.length === 0) {
+                output.innerText = "No Faction IDs provided.";
+                return;
+            }
+
+            for (let task of tasks) {
+                try {
+                    const url = `https://api.torn.com/faction/${task.fid}/?selections=basic&key=${apiKey}`;
+                    const res = await fetch(url);
+                    const data = await res.json();
+
+                    if(data.error) {
+                        generatedContractsData.push(`Error Faction ${task.fid}: ${data.error.error}`);
+                        continue;
+                    }
+
+                    const latestWarId = Object.keys(data.ranked_wars || {}).sort((a,b) => b-a)[0];
+                    let startTimestamp = null;
+                    let enemyName = "N/A";
+                    let formattedStart = "N/A";
+
+                    if (latestWarId) {
+                        const war = data.ranked_wars[latestWarId];
+                        startTimestamp = war.war.start;
+                        const factionsObj = war.factions;
+                        for(let fKey in factionsObj) {
+                            if(factionsObj[fKey].name !== data.name) {
+                                enemyName = factionsObj[fKey].name;
+                                break;
+                            }
+                        }
+                        if(startTimestamp) {
+                            formattedStart = new Date(startTimestamp * 1000).toLocaleString('en-US', {
+                                timeZone: 'Europe/Dublin', weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: 'numeric', minute: 'numeric', second: 'numeric',
+                            });
+                        }
+                    }
+
+                    const timestampCode = startTimestamp ? `<t:${startTimestamp}:R>` : `<t:null:R>`;
+                    const str = `## [${data.name}](https://www.torn.com/factions.php?step=profile&ID=${data.ID}#/) vs ${enemyName}\n**Start date:** ${formattedStart} TCT ${timestampCode}\n**Status:** : __Revive only During Their War__\n**Conditions**: **${task.cond} .. ${task.chance}%++ Chance**`;
+
+                    generatedContractsData.push(str);
+
+                } catch (e) {
+                    generatedContractsData.push(`Failed to fetch ID ${task.fid}`);
+                }
+            }
+            
+            output.innerText = `${HEADER_TEXT}\n\n${generatedContractsData.join('\n\n')}\n\n${FOOTER_TEXT}`;
+        }
+
+        function copyText(text) {
+            const ta = document.createElement('textarea');
+            ta.value = text;
+            document.body.appendChild(ta);
+            ta.select();
+            document.execCommand('copy');
+            document.body.removeChild(ta);
+            alert("Copied!");
+        }
+
+        function copyFull() {
+            if(!generatedContractsData.length) return alert("Generate first.");
+            copyText(`${HEADER_TEXT}\n\n${generatedContractsData.join('\n\n')}\n\n${FOOTER_TEXT}`);
+        }
+
+        function copyPart(part) {
+            if(!generatedContractsData.length) return alert("Generate first.");
+            const limit = parseInt(document.getElementById('splitLimit').value) || 6;
+            const total = generatedContractsData.length;
+
+            if (part === 1) {
+                const slice = generatedContractsData.slice(0, limit);
+                let msg = `${HEADER_TEXT}\n\n${slice.join('\n\n')}`;
+                if (total <= limit) msg += `\n\n${FOOTER_TEXT}`;
+                copyText(msg);
+            } else if (part === 2) {
+                if (total <= limit) return alert("No 2nd message needed.");
+                const slice = generatedContractsData.slice(limit);
+                copyText(`${slice.join('\n\n')}\n\n${FOOTER_TEXT}`);
+            }
+        }
+    </script>
+</body>
+</html>
