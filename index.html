@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WTF-Healers Contracts</title>
-    <link rel="icon" href="img/logo.gif" type="image/png">
+    <link rel="icon" href="img/00.png" type="image/png">
     <style>
         :root {
             --bg-color: #0a0a0a;
@@ -33,7 +33,7 @@
         }
 
         h1 {
-            font-size: 2rem;
+            font-size: 1.8rem;
             text-align: center;
             background: var(--accent-orange-grad);
             -webkit-background-clip: text;
@@ -47,7 +47,7 @@
             max-width: 1000px;
             background: var(--card-bg);
             border-radius: 12px;
-            padding: 20px;
+            padding: 15px; /* Reduced padding for mobile */
             box-shadow: var(--shadow);
             border: 1px solid var(--border-color);
         }
@@ -59,6 +59,8 @@
             border-bottom: 2px solid var(--border-color);
             padding-bottom: 10px;
             margin-bottom: 15px;
+            flex-wrap: wrap; /* Allows buttons to wrap on tiny screens */
+            gap: 10px;
         }
 
         .section-title {
@@ -78,6 +80,8 @@
         
         @media (max-width: 600px) {
             .settings-grid { grid-template-columns: 1fr; }
+            .btn-container { flex-direction: column; }
+            .btn-container button { width: 100%; }
         }
 
         label {
@@ -103,52 +107,55 @@
             border-color: var(--accent-orange);
         }
 
-        /* --- COMPACT TABLE STYLES --- */
-        .table-container {
+        /* --- FIXED TABLE STYLES --- */
+        .table-wrapper {
             background: #080808;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             overflow: hidden;
+            position: relative;
+        }
+
+        /* The scroll container for the whole table content */
+        .scroll-container {
+            overflow-x: auto; /* Allows left/right scroll */
+            -webkit-overflow-scrolling: touch; /* Smooth scroll on iOS */
+            width: 100%;
+        }
+
+        /* Define the grid columns rigidly */
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 40px 100px 100px 1.5fr 70px; /* Fixed widths for IDs to prevent squashing */
+            gap: 10px;
+            align-items: center;
+            padding: 8px 10px;
+            min-width: 700px; /* CRITICAL: Forces the table to be wide enough, triggering scroll */
         }
 
         .table-header {
-            display: grid;
-            grid-template-columns: 40px 1fr 1fr 1.5fr 80px;
             background: #252525;
-            padding: 8px 10px;
             font-size: 0.75rem;
             color: var(--accent-green);
             font-weight: bold;
             border-bottom: 1px solid var(--border-color);
         }
 
-        .rows-scroll-area {
+        .rows-area {
             max-height: 350px;
-            overflow-y: auto;
-            overflow-x: hidden;
+            overflow-y: auto; /* Vertical scroll */
         }
 
         .table-row {
-            display: grid;
-            grid-template-columns: 40px 1fr 1fr 1.5fr 80px;
-            gap: 10px;
-            padding: 8px 10px;
             border-bottom: 1px solid #1a1a1a;
-            align-items: center;
         }
-
+        
         .table-row:nth-child(even) { background-color: #0e0e0e; }
-        .table-row:hover { background-color: #1a1a1a; }
-
+        
         .row-num {
             color: #666;
             font-size: 0.8rem;
             text-align: center;
-        }
-
-        @media (max-width: 768px) {
-            .table-container { overflow-x: auto; }
-            .table-header, .table-row { min-width: 600px; }
         }
 
         /* --- Buttons --- */
@@ -172,32 +179,17 @@
             text-transform: uppercase;
         }
 
-        button:hover {
-            background: var(--accent-orange);
-            color: #000;
-        }
+        button:hover { background: var(--accent-orange); color: #000; }
 
-        button.primary {
-            background: var(--accent-orange-grad);
-            color: #000;
-            border: none;
-        }
+        button.primary { background: var(--accent-orange-grad); color: #000; border: none; }
         
         button.small-btn {
             padding: 6px 12px;
             font-size: 0.7rem;
-            margin-left: 10px;
         }
 
-        button.danger-btn {
-            border-color: var(--accent-red);
-            color: var(--accent-red);
-        }
-
-        button.danger-btn:hover {
-            background: var(--accent-red);
-            color: white;
-        }
+        button.danger-btn { border-color: var(--accent-red); color: var(--accent-red); }
+        button.danger-btn:hover { background: var(--accent-red); color: white; }
 
         /* --- Preview --- */
         .preview-area {
@@ -239,36 +231,39 @@
                 <input type="number" id="splitLimit" value="6" min="1" max="20">
             </div>
             <div>
-                <button onclick="saveSettings()" style="height: 36px; margin-top: 18px;">Save</button>
+                <button onclick="saveSettings()" style="height: 36px; width: 100%;">Save</button>
             </div>
         </div>
 
         <div class="section-header">
             <span class="section-title">Contract List</span>
-            <div>
-                <button class="small-btn danger-btn" onclick="clearTable()">Clear All</button>
-                <button class="small-btn" onclick="fetchFactionIds()">Autofill Faction IDs</button>
+            <div style="display: flex; gap: 5px;">
+                <button class="small-btn danger-btn" onclick="clearTable()">Clear</button>
+                <button class="small-btn" onclick="fetchFactionIds()">Autofill</button>
             </div>
         </div>
 
-        <div class="table-container">
-            <div class="table-header">
-                <div style="text-align:center">#</div>
-                <div>Player ID</div>
-                <div>Faction ID</div>
-                <div>Condition (Type)</div>
-                <div>Chance %</div>
-            </div>
-
-            <div class="rows-scroll-area" id="rowsContainer">
+        <div class="table-wrapper">
+            <div class="scroll-container">
+                <div class="grid-layout table-header">
+                    <div style="text-align:center">#</div>
+                    <div>Player ID</div>
+                    <div>Faction ID</div>
+                    <div>Condition</div>
+                    <div>Chance %</div>
                 </div>
+
+                <div class="rows-area" id="rowsContainer">
+                    </div>
+            </div>
         </div>
+        <p style="text-align: center; color: #555; font-size: 0.7rem; margin-top: 5px;">(Scroll right to see all fields on mobile)</p>
 
         <div class="btn-container">
             <button class="primary" onclick="generateContracts()">Generate Message</button>
             <button onclick="copyFull()">Copy Full (Nitro)</button>
-            <button onclick="copyPart(1)">Copy Message 1</button>
-            <button onclick="copyPart(2)">Copy Message 2</button>
+            <button onclick="copyPart(1)">Copy Part 1</button>
+            <button onclick="copyPart(2)">Copy Part 2</button>
         </div>
 
         <div id="previewContainer" class="preview-area hidden">
@@ -282,7 +277,6 @@
         const ROW_COUNT = 10;
         let generatedContractsData = [];
 
-        // Headers & Footers
         const HEADER_TEXT = `# RW Contracts for the week\n\n**__Hello, here are the revive contracts we have this week. Make sure you stack up! @Doctors__**`;
         const FOOTER_TEXT = `**Notes**: Please keep chat in #"Doctors Office"\nAllies in BLUE, Enemies in WHITE\nDON'T DO FRIENDLY REVIVES FOR WHITE NOR HOSTILES ON BLUE\n\n**__Revives under the contracted percentage will not be paid!__**\n\n#contracts-no-idle-chat     #revive-pings    #healers-council    #"bookings and notes" @Doctor`;
 
@@ -297,11 +291,11 @@
 
             for (let i = 1; i <= ROW_COUNT; i++) {
                 const div = document.createElement('div');
-                div.className = 'table-row';
+                div.className = 'grid-layout table-row'; // Use grid-layout class for consistency
                 div.innerHTML = `
                     <div class="row-num">${i}</div>
-                    <div><input type="text" id="pid_${i}" placeholder="PID"></div>
-                    <div><input type="text" id="fid_${i}" placeholder="FID"></div>
+                    <div><input type="number" id="pid_${i}" placeholder="PID"></div>
+                    <div><input type="number" id="fid_${i}" placeholder="FID"></div>
                     <div><input type="text" id="cond_${i}" placeholder="Discord Pings"></div>
                     <div><input type="number" id="chance_${i}" placeholder="50"></div>
                 `;
@@ -309,17 +303,14 @@
             }
         }
 
-        // New Clear Function
         function clearTable() {
-            if(!confirm("Are you sure you want to clear all input fields?")) return;
-            
+            if(!confirm("Clear all inputs?")) return;
             for (let i = 1; i <= ROW_COUNT; i++) {
                 document.getElementById(`pid_${i}`).value = "";
                 document.getElementById(`fid_${i}`).value = "";
                 document.getElementById(`cond_${i}`).value = "";
-                document.getElementById(`chance_${i}`).value = ""; // Or reset to 50 if preferred, currently clearing to empty
+                document.getElementById(`chance_${i}`).value = "";
             }
-            // Clear preview as well
             document.getElementById('previewOutput').innerText = "";
             document.getElementById('previewContainer').classList.add('hidden');
             generatedContractsData = [];
